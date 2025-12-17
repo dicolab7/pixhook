@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>PixHook Admin • Plano</title>
+
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --border: #1f2933;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #22c55e;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.35);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #6b7280;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .1s ease, opacity .15s ease;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    pre {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+
+      <h1>Admin • Plano do Dispositivo</h1>
+      <div class="subtitle">Atualizar plano FREE / PRO</div>
+
+      <label for="androidId">Android ID</label>
+      <input id="androidId" placeholder="ex: f3b4bc1c431fa831" />
+
+      <label for="plan">Plano</label>
+      <select id="plan">
+        <option value="FREE">FREE</option>
+        <option value="PRO">PRO</option>
+      </select>
+
+      <label for="adminKey">Admin Key</label>
+      <input id="adminKey" type="password" placeholder="••••••••••" />
+
+      <button onclick="send()">Salvar plano</button>
+
+      <pre id="out"></pre>
+
+    </div>
+
+    <footer>
+      PixHook Admin • Acesso restrito
+    </footer>
+  </div>
+
+  <script>
+    async function send() {
+      const android_id = document.getElementById('androidId').value.trim();
+      const plan = document.getElementById('plan').value;
+      const key = document.getElementById('adminKey').value.trim();
+      const out = document.getElementById('out');
+
+      out.textContent = 'Enviando...';
+
+      try {
+        const r = await fetch('/admin/device/plan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': key
+          },
+          body: JSON.stringify({ android_id, plan })
+        });
+
+        const t = await r.text();
+        out.textContent = `HTTP ${r.status}\n${t}`;
+
+      } catch (e) {
+        out.textContent = 'Erro: ' + e.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
+
