@@ -1,22 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>PixHook Admin</title>
+
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --border: #1f2933;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    header span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    thead {
+      background: #020617;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,.03);
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge.free {
+      background: rgba(245, 158, 11, .15);
+      color: var(--warning);
+    }
+
+    .badge.pro {
+      background: rgba(34, 197, 94, .15);
+      color: var(--primary);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, .15);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, .25);
+    }
+
+    .btn-primary {
+      background: rgba(34, 197, 94, .15);
+      color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: rgba(34, 197, 94, .25);
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+
+      th, td {
+        padding: 10px 8px;
+        font-size: 13px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2>Dispositivos</h2>
-  <table border="1">
-    <thead>
-      <tr>
-        <th>Android ID</th>
-        <th>Plano</th>
-        <th>Envios Hoje</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="list"></tbody>
-  </table>
+
+  <div class="container">
+
+    <header>
+      <h1>PixHook Admin</h1>
+      <span>Painel de dispositivos</span>
+    </header>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Android ID</th>
+            <th>Plano</th>
+            <th>Envios Hoje</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="list">
+          <!-- app.js preenche aqui -->
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      PixHook © 2025 — Painel administrativo
+    </footer>
+
+  </div>
 
   <script src="app.js"></script>
 </body>
