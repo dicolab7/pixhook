@@ -9,30 +9,41 @@ import purchaseRoutes from './routes/purchase.js';
 import rtdnRoutes from './routes/rtdn.js';
 import deviceRoutes from './routes/device.js';
 
+import migrate from './migrate.js';
+
 dotenv.config();
 
-const app = express();
-app.use(cors());
+async function bootstrap() {
+  console.log('🧱 Rodando migrate...');
+  await migrate();
 
-// 👇 ESSENCIAL
-app.use(express.json());
-app.use(express.text({ type: "*/*" }));
+  const app = express();
+  app.use(cors());
 
-// 🔍 DEBUG GLOBAL
-app.use((req, res, next) => {
-  console.log(`➡️ ${req.method} ${req.originalUrl}`);
-  console.log('📦 body:', req.body);
-  next();
-});
+  app.use(express.json());
+  app.use(express.text({ type: '*/*' }));
 
-app.use(express.static('public'));
+  app.use((req, res, next) => {
+    console.log(`➡️ ${req.method} ${req.originalUrl}`);
+    console.log('📦 body:', req.body);
+    next();
+  });
 
-app.use('/api', apiRoutes);
-app.use('/admin', adminRoutes);
-app.use('/api/purchase', purchaseRoutes);
-app.use('/api/rtdn', rtdnRoutes);
-app.use('/api/device', deviceRoutes);
+  app.use(express.static('public'));
 
-app.listen(process.env.PORT, '0.0.0.0', () => {
-  console.log(`🔥 PixHook backend rodando na porta ${process.env.PORT}`);
+  app.use('/api', apiRoutes);
+  app.use('/admin', adminRoutes);
+  app.use('/api/purchase', purchaseRoutes);
+  app.use('/api/rtdn', rtdnRoutes);
+  app.use('/api/device', deviceRoutes);
+
+  const port = process.env.PORT || 10000;
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`🔥 PixHook backend rodando na porta ${port}`);
+  });
+}
+
+bootstrap().catch((err) => {
+  console.error('❌ Erro no bootstrap:', err);
+  process.exit(1);
 });
