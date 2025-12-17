@@ -1,15 +1,35 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
-import pkg from 'pg';
+import pkg from "pg";
 const { Pool } = pkg;
 
 export const db = new Pool({
   host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
+  port: Number(process.env.DB_PORT || 5432),
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD
+  password: process.env.DB_PASSWORD,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
+
+
+// local
+// import dotenv from 'dotenv';
+// dotenv.config();
+
+// import pkg from 'pg';
+// const { Pool } = pkg;
+
+// export const db = new Pool({
+//   host: process.env.DB_HOST,
+//   port: Number(process.env.DB_PORT),
+//   database: process.env.DB_NAME,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD
+// });
+
 
 
