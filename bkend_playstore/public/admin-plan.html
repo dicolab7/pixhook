@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PixHook Admin - Plano</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --card: #111827;
+      --border: #1f2933;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.35);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--primary);
+      color: #022c22;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .secondary {
+      margin-top: 10px;
+      background: #020617;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    pre {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #020617;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Admin - Plano do Dispositivo</h1>
+      <div class="subtitle">Atualizar plano FREE / PRO</div>
+
+      <label for="androidId">Android ID</label>
+      <input id="androidId" placeholder="ex: f3b4bc1c431fa831">
+
+      <label for="plan">Plano</label>
+      <select id="plan">
+        <option value="FREE">FREE</option>
+        <option value="PRO">PRO</option>
+      </select>
+
+      <button type="button" onclick="send()">Salvar plano</button>
+      <button type="button" class="secondary" onclick="window.location.href='/admin'">Voltar</button>
+
+      <pre id="out"></pre>
+    </div>
+
+    <footer>PixHook Admin - Acesso restrito</footer>
+  </div>
+
+  <script>
+    async function send() {
+      const android_id = document.getElementById('androidId').value.trim();
+      const plan = document.getElementById('plan').value;
+      const out = document.getElementById('out');
+
+      out.textContent = 'Enviando...';
+
+      try {
+        const response = await fetch('/admin/device/plan', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ android_id, plan })
+        });
+
+        if (response.status === 401) {
+          window.location.href = '/admin/login';
+          return;
+        }
+
+        const text = await response.text();
+        out.textContent = `HTTP ${response.status}\n${text}`;
+      } catch (error) {
+        out.textContent = 'Erro: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>

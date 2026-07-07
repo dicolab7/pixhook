@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PixHook Admin - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --card: #111827;
+      --border: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #22c55e;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    main {
+      width: 100%;
+      max-width: 380px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input, button {
+      width: 100%;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    input {
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+    }
+
+    button {
+      margin-top: 16px;
+      border: 0;
+      background: var(--primary);
+      color: #052e16;
+      padding: 11px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .error {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--danger);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>PixHook Admin</h1>
+    <p>Acesso restrito</p>
+
+    <form id="loginForm">
+      <label for="password">Senha do admin</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" autofocus required>
+      <button type="submit">Entrar</button>
+      <div id="error" class="error" role="alert"></div>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const error = document.getElementById('error');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      error.textContent = '';
+
+      const password = document.getElementById('password').value;
+      const response = await fetch('/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ password })
+      });
+
+      if (response.ok) {
+        window.location.href = '/admin';
+        return;
+      }
+
+      error.textContent = response.status === 429
+        ? 'Muitas tentativas. Aguarde alguns minutos.'
+        : 'Senha inválida ou autenticação não configurada.';
+    });
+  </script>
+</body>
+</html>
