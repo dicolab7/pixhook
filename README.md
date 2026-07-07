@@ -311,6 +311,8 @@ npm start
 - A pasta `bkend_playstore/public` e usada apenas para telas do admin.
 - O endpoint `/api/whatsapp/qr/1` nao faz parte deste projeto atualmente. Se ele aparecer nos logs, provavelmente vem de uma aba antiga, cache, teste externo ou outro frontend apontando para este servidor.
 
-## Licenca
+## Uso e direitos
 
-Defina aqui a licenca do projeto antes de publicar no GitHub.
+Este e um produto privado e proprietario.
+
+Todos os direitos reservados. O codigo-fonte, marca, telas, documentacao e demais arquivos deste repositorio nao podem ser copiados, modificados, redistribuidos, revendidos ou usados comercialmente por terceiros sem autorizacao expressa do autor.
