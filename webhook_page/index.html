@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>PIX Autônomo – Webhook direto do seu Android</title>
+  <link rel="icon" href="/favicon/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/favicon/favicon.ico">
+  <meta name="description" content="App Android que escuta notificações PIX da Caixa e dispara webhooks seguros para o seu servidor, sem intermediários, sem gambiarras.">
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-content">
+      <h1>Webhook PIX direto do seu Android</h1>
+      <p>Transforme notificações de pagamento em automação real: seu app lê o aviso PIX e dispara um webhook seguro para o seu backend, sem intermediários.</p>
+      <a href="#download" class="btn-primary">Baixar o app</a>
+      <a href="documents.html" class="btn-secondary">Ver como funciona</a>      
+    </div>
+    <div class="hero-image">
+      <!-- aqui você coloca um mockup do app -->
+      <img src="/img/logo.png" alt="Tela do app Android enviando webhook PIX" >
+    </div>
+  </header>
+
+  <section id="problema" class="section">
+    <h2>O problema que o app resolve</h2>
+    <p>Se você recebe PIX em bancos que não oferecem webhooks oficiais, acaba preso a soluções manuais, captura de tela, conciliação no braço ou integrações pouco confiáveis.</p>
+    <p>Seu app Android faz o trabalho sujo: escuta as notificações da Caixa, interpreta o comprovante e envia um POST assinado para o seu servidor.</p>
+  </section>
+
+  <section id="como-funciona" class="section section-alt">
+    <h2>Como funciona na prática</h2>
+    <ol>
+      <li>Você instala o app no Android que recebe as notificações PIX.</li>
+      <li>No app, configura a URL do webhook e o segredo HMAC.</li>
+      <li>A cada PIX recebido, o app lê a notificação, extrai valor, pagador e TXID.</li>
+      <li>O app envia um POST JSON assinado para o seu backend, que confirma o pagamento automaticamente.</li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>Principais recursos</h2>
+    <div class="features">
+      <div class="feature">
+        <h3>Webhook autônomo</h3>
+        <p>O próprio Android vira “gateway” de notificações PIX, sem precisar de APIs bancárias ou serviços terceiros.</p>
+      </div>
+      <div class="feature">
+        <h3>Assinatura HMAC</h3>
+        <p>Cada requisição leva cabeçalhos com timestamp e assinatura HMAC SHA-256 para validação no servidor.</p>
+      </div>
+      <div class="feature">
+        <h3>TXID integrado</h3>
+        <p>O app envia o TXID do PIX, permitindo casar pagamentos com suas assinaturas ou pedidos.</p>
+      </div>
+      <div class="feature">
+        <h3>Configuração simples</h3>
+        <p>Você só informa a URL do webhook, o segredo e escolhe quais apps de notificação o app vai observar.</p>
+      </div>
+      <div class="feature">
+        <h3>Praticidade</h3>
+        <p>De forma prática, você transforma seu dispositivo móvel em um parceiro de automação de vendas e serviços.</p>
+      </div>
+      <div class="feature">
+        <h3>Simplicidade</h3>
+        <p>Com uma imensa simplicidade você configura o app, sem complicações e sem conhecimento avançado.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <h2>Quem pode usar</h2>
+    <ul>
+      <li>SaaS e plataformas que vendem acesso recorrente via PIX.</li>
+      <li>Lojas online que querem ativar pedidos automaticamente após o pagamento.</li>
+      <li>Produtores de conteúdo que vendem acesso a grupos, cursos ou bots.</li>
+      <li>Qualquer sistema que use TXID/valor para confirmar pagamentos.</li>
+    </ul>
+  </section>
+
+  <section id="seguranca" class="section">
+    <h2>Segurança em primeiro lugar</h2>
+    <ul>
+      <li>Envio de timestamp e assinatura HMAC no corpo da requisição.</li>
+      <li>Webhook só é aceito se a assinatura bater com o segredo configurado no servidor.</li>
+      <li>Você decide a URL, portas, TLS e toda a política no backend.</li>
+    </ul>
+  </section>
+
+  <section id="download" class="section section-cta">
+    <h2>Comece a usar agora</h2>
+    <p>Baixe o app, configure seu servidor e tenha confirmação de PIX em tempo real, do seu jeito.</p>
+    <!-- substitua pelo link real da Play Store ou APK -->
+    <a href="https://seu-link-de-download" class="btn-primary">Baixar APK / Google Play</a>
+    <p class="cta-note">Inclui exemplo de backend em Node.js para validação do webhook e ativação de assinaturas.</p>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Seu Nome / Sua Empresa. Todos os direitos reservados.</p>
+    <a href="termos.html" class="btn-secondary">Ver termos</a>
+    <a href="privacidade.html" class="btn-secondary">Ver privacidade</a>
+  </footer>
+</body>
+</html>

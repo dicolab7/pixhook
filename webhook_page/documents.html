@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>PIX Autônomo - Documentação para Devs</title>
+  <link rel="icon" href="/favicon/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/favicon/favicon.ico">
+  <meta name="description" content="Documentação completa: webhook PIX Caixa → Node.js + PostgreSQL. Exemplos prontos server.js, subscriptions, checkout e validação HMAC.">
+  <link rel="stylesheet" href="/css/index.css">
+  <style>
+    pre { background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 12px; overflow-x: auto; margin: 1rem 0; font-size: 0.95rem; }
+    code { background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 6px; font-family: 'Monaco', monospace; }
+    .env-box { border-left: 4px solid #3b82f6; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-content">
+      <h1>📖 Documentação PIX Autônomo</h1>
+      <p>Guia completo para integrar webhook PIX Caixa → Node.js + PostgreSQL em 5 minutos</p>
+      <a href="#env" class="btn-primary">Download</a>
+      <a href="/" class="btn-secondary">Início</a>
+    </div>
+    <div class="hero-image">
+      <!-- aqui você coloca um mockup do app -->
+      <img src="/img/logo.png" alt="Tela do app Android enviando webhook PIX" >
+    </div>
+  </header>
+
+  <section id="env" class="section section-alt">
+    <h2>1. .env (variáveis obrigatórias)</h2>
+    <pre class="env-box">DATABASE_URL=postgresql://user:pass@localhost:5432/sua_db
+PORT=3000
+HMAC_SECRET=meuSegredoSuperSecreto123🔥
+NGROK_TOKEN=seu_token_ngrok
+</pre>
+  </section>
+
+  <section id="schema" class="section">
+    <h2>2. Schema PostgreSQL (subscriptions.sql)</h2>
+    <pre>CREATE TABLE subscriptions (
+  id SERIAL PRIMARY KEY,
+  txid VARCHAR(32) UNIQUE NOT NULL,
+  user_id INTEGER,
+  value DECIMAL(10,2),
+  status VARCHAR(20) DEFAULT 'pending',
+  expires_at TIMESTAMP,
+  activated_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT now()
+);
+
+-- Índices importantes
+CREATE INDEX idx_sub_txid ON subscriptions(txid);
+CREATE INDEX idx_sub_status_exp ON subscriptions(status, expires_at);
+</pre>
+  </section>
+
+  <section id="server" class="section section-alt">
+    <h2>3. server.js (base completa)</h2>
+    <pre>const express = require('express');
+const crypto = require('crypto');
+const { Pool } = require('pg');
+require('dotenv').config();
+
+const app = express();
+app.use(express.json());
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const HMAC_SECRET = process.env.HMAC_SECRET;
+
+// Middleware HMAC
+app.use('/api/webhook', (req, res, next) => {
+  const signature = req.headers['x-signature'];
+  const timestamp = req.headers['x-timestamp'];
+  
+  if (!signature || !timestamp) return res.status(401).json({error: 'Missing headers'});
+  
+  const data = JSON.stringify(req.body) + timestamp;
+  const expected = crypto.createHmac('sha256', HMAC_SECRET).update(data).digest('hex');
+  
+  if (signature !== expected) return res.status(401).json({error: 'Invalid signature'});
+  next();
+});
+
+// Job expiração (roda a cada 1min)
+setInterval(async () => {
+  await pool.query(`UPDATE subscriptions SET status='expired' 
+    WHERE status='pending' AND expires_at < now()`);
+}, 60000);
+
+app.listen(process.env.PORT || 3000, () => console.log('🚀 Server rodando'));</pre>
+  </section>
+
+  <section id="checkout" class="section">
+    <h2>4. POST /api/checkout (criar pagamento)</h2>
+    <pre>app.post('/api/checkout', async (req, res) => {
+  const { user_id, value } = req.body;
+  const txid = `TX${Date.now()}${Math.random().toString(36).substr(2,9)}`;
+  const expires_at = new Date(Date.now() + 15*60*1000);
+  
+  await pool.query(`
+    INSERT INTO subscriptions (txid, user_id, value, expires_at)
+    VALUES ($1, $2, $3, $4)
+  `, [txid, user_id, value, expires_at]);
+  
+  res.json({ txid, qr_code: `PIX ${txid} | R$ ${value}`, expires_in: '15min' });
+});</pre>
+  </section>
+
+  <section id="webhook" class="section section-alt">
+    <h2>5. POST /api/webhook/pix (ativa pagamento)</h2>
+    <pre>app.post('/api/webhook/pix', async (req, res) => {
+  const { txid, value, payer_name, payer_document } = req.body;
+  
+  const result = await pool.query(`
+    SELECT id FROM subscriptions 
+    WHERE txid=$1 AND status='pending' AND value=$2
+  `, [txid, value]);
+  
+  if (result.rows.length === 0) {
+    return res.status(404).json({error: 'Subscription not found'});
+  }
+  
+  await pool.query(`
+    UPDATE subscriptions SET 
+      status='active', activated_at=now(), 
+      expires_at=now() + interval '30 days'
+    WHERE id=$1
+  `, [result.rows[0].id]);
+  
+  console.log(`✅ PIX ${txid} ativado!`);
+  res.json({ success: true });
+});</pre>
+  </section>
+
+  <section id="teste" class="section">
+    <h2>6. Teste Local (ngrok)</h2>
+    <pre>npm i -g ngrok
+ngrok http 3000
+# URL: https://abc123.ngrok.io
+# Cole no app Android → https://abc123.ngrok.io/api/webhook/pix
+# HMAC Secret: seu .env HMAC_SECRET</pre>
+    <p><strong>App Android envia:</strong></p>
+    <pre>{
+  "txid": "TX123456789",
+  "value": 29.90,
+  "payer_name": "João Silva",
+  "payer_document": "123.456.789-00"
+}</pre>
+  </section>
+
+  <section class="section section-cta">
+    <h2>🎉 Pronto para produção!</h2>
+    <p>1. Deploy Render/Heroku → URL fixa<br>2. App Android com URL produção + HMAC<br>3. PIX chega → webhook ativa em &lt;2s</p>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 PIX Autônomo | <a href="/">Início</a></p>
+  </footer>
+</body>
+</html>
